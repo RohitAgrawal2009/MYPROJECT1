@@ -1,0 +1,6 @@
+{
+  "name": "JobBond - Connecting Skills. Creating Opportunities.",
+  "description": "India's trusted platform connecting local customers with skilled and unskilled workers for home, commercial, and agricultural services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
