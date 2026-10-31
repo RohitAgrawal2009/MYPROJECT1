@@ -26,7 +26,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
   const { user, logout, openAuthModal } = useAuth();
-  const { language, setLanguage, languages, t } = useLanguage();
+  const { language, setLanguage, languages, resetLanguageSelection, t } = useLanguage();
   const { theme, effectiveTheme, setTheme } = useTheme();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -257,6 +257,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) =
                       )}
                     </button>
                   ))}
+                  <div className="border-t border-slate-100 dark:border-slate-700/60 mt-1 pt-1 px-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetLanguageSelection();
+                        setLangDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-lg flex items-center gap-1.5 transition-colors"
+                    >
+                      <Globe className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('chooseLanguageTitle')} (Full Screen)</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

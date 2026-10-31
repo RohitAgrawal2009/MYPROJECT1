@@ -163,6 +163,97 @@
       "id": "usr-822bc0d6-dfc1-46ab-ad10-50183f75e14f",
       "created_at": "2026-10-29T19:32:54.403Z",
       "updated_at": "2026-10-29T19:32:54.403Z"
+    },
+    {
+      "email": "test.worker.1793469500454@jobbond.in",
+      "password_hash": "e6221efc6653d239189df07821246072:ca0ee561e8809aa97572056378c0c850080a33c0c33acf27ce540504d207dc9ac1fb8c906580fc50851129ff4759de27b21868495ed85e558cf83cc54c1bcb73",
+      "full_name": "Sunil Sharma Carpenter",
+      "phone": "+91 98888 77777",
+      "role": "worker",
+      "preferred_lang": "hi",
+      "is_active": true,
+      "id": "usr-6f1d45cf-a5ed-4c92-8f8e-9fca6d5e7e41",
+      "created_at": "2026-10-31T17:58:20.501Z",
+      "updated_at": "2026-10-31T17:58:20.501Z"
+    },
+    {
+      "email": "name@gmail.com",
+      "password_hash": "cfbc30fdf5f762219527a18120cf79ec:b0d639dce85d3da8245ae45737808d1a2e34ada4e27e3b493c1d54355c56bd7316699c5081db1f11023daef3143457ec52b119c0c97c4218be9f5329a27a19ec",
+      "full_name": "MUNNA",
+      "phone": "1234567895",
+      "role": "worker",
+      "preferred_lang": "hi",
+      "is_active": true,
+      "id": "usr-b9cb1592-5650-48e1-a984-171c13107d65",
+      "created_at": "2026-10-31T18:11:56.870Z",
+      "updated_at": "2026-10-31T18:11:56.870Z"
+    },
+    {
+      "email": "9876543210@phone.jobbond.in",
+      "password_hash": "dc4b569c2880ad62be284d924de27379:ef8d34fcca1aff31ad449374eb61fdbb297da72f1bca9b6383f7abf8d3d984ed97a2e932202c55d0305a92a5827e8a9b48ed7e8ab0c868d167bae240dc7be0e6",
+      "full_name": "Worker / Customer",
+      "phone": "+91 9876543210",
+      "role": "worker",
+      "preferred_lang": "hi",
+      "is_active": true,
+      "onboarding_completed": false,
+      "id": "usr-a91ca966-f1d2-4697-a6a8-0dab30574928",
+      "created_at": "2026-10-31T18:13:32.463Z",
+      "updated_at": "2026-10-31T18:13:39.113Z"
+    },
+    {
+      "email": "test.worker.1793470431298@jobbond.in",
+      "password_hash": "48d0aa76b6d8bcb11ccc702c42f573aa:0a27ab109de5565ada977fd7201cb62fde0223082c36fec29d22751a272d3c8146d34eb3e38ad04e6ddd89998c40f3b6e93891ca783707300837cc7e876e84b3",
+      "full_name": "Sunil Sharma Carpenter",
+      "phone": "+91 98888 77777",
+      "role": "worker",
+      "preferred_lang": "hi",
+      "is_active": true,
+      "id": "usr-78491c8f-a74c-47fd-96c9-2d8fe8072ea6",
+      "created_at": "2026-10-31T18:13:51.343Z",
+      "updated_at": "2026-10-31T18:13:51.343Z"
+    },
+    {
+      "email": "9123456789@phone.jobbond.in",
+      "password_hash": "hash:1234",
+      "full_name": "Harpreet Singh",
+      "phone": "+91 9123456789",
+      "role": "worker",
+      "preferred_lang": "pa",
+      "is_active": true,
+      "onboarding_completed": true,
+      "id": "usr-f945c884-9b4e-4449-922d-d61b8c20da90",
+      "created_at": "2026-10-31T18:13:51.368Z",
+      "updated_at": "2026-10-31T18:13:51.370Z",
+      "city": "Amritsar",
+      "village": "Verka Rural"
+    },
+    {
+      "email": "test.worker.1793470446346@jobbond.in",
+      "password_hash": "345c667e62d730d89afd1455b1702549:df30a42f256c79e919fd7f99baed524ffb512cbf70a16ffebb55be5bab2f6d7a3f6fb9ed738f1c220e742f4263debce3657db0eed29a50b52e344d0a5282089e",
+      "full_name": "Sunil Sharma Carpenter",
+      "phone": "+91 98888 77777",
+      "role": "worker",
+      "preferred_lang": "hi",
+      "is_active": true,
+      "id": "usr-69bc6f76-12f7-4bee-b114-427caf903350",
+      "created_at": "2026-10-31T18:14:06.391Z",
+      "updated_at": "2026-10-31T18:14:06.391Z"
+    },
+    {
+      "email": "9123456789@phone.jobbond.in",
+      "password_hash": "hash:1234",
+      "full_name": "Harpreet Singh",
+      "phone": "+91 9123456789",
+      "role": "worker",
+      "preferred_lang": "pa",
+      "is_active": true,
+      "onboarding_completed": true,
+      "id": "usr-a9021344-77ff-4c8c-8cac-206ecf6bcbb7",
+      "created_at": "2026-10-31T18:14:06.400Z",
+      "updated_at": "2026-10-31T18:14:06.403Z",
+      "city": "Amritsar",
+      "village": "Verka Rural"
     }
   ],
   "service_categories": [
@@ -437,6 +528,132 @@
       "is_public": true,
       "created_at": "2026-10-29T19:32:54.404Z",
       "updated_at": "2026-10-29T19:32:54.404Z"
+    },
+    {
+      "id": "wp-bf4211bf-65af-4148-a9b6-ab5611932de8",
+      "profile_id": "usr-6f1d45cf-a5ed-4c92-8f8e-9fca6d5e7e41",
+      "bio": "Skilled furniture builder",
+      "bio_hi": "",
+      "experience_years": 6,
+      "city": "Pune",
+      "service_area": "Kothrud, Hinjewadi",
+      "hourly_rate": 250,
+      "daily_rate": 1200,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T17:58:20.502Z",
+      "updated_at": "2026-10-31T17:58:20.502Z"
+    },
+    {
+      "id": "wp-4447c8b5-b1aa-4f44-a41f-4a4e0e228e18",
+      "profile_id": "usr-b9cb1592-5650-48e1-a984-171c13107d65",
+      "bio": "Experienced MUNNA ready for local job bookings.",
+      "bio_hi": "",
+      "experience_years": 7,
+      "city": "Patna",
+      "service_area": "NAUGAON",
+      "hourly_rate": 200,
+      "daily_rate": 900,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:11:56.871Z",
+      "updated_at": "2026-10-31T18:11:56.871Z"
+    },
+    {
+      "id": "wp-426a3c42-0203-44d1-82d1-1b629b338d23",
+      "profile_id": "usr-a91ca966-f1d2-4697-a6a8-0dab30574928",
+      "bio": "Worker / Customer - Skilled local service provider on JobBond.",
+      "bio_hi": "Worker / Customer - जॉबबॉन्ड पर कुशल स्थानीय कारीगर।",
+      "experience_years": 1,
+      "city": "Local Area",
+      "service_area": "City & Surrounding Areas",
+      "hourly_rate": 180,
+      "daily_rate": 750,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:13:39.113Z",
+      "updated_at": "2026-10-31T18:13:39.113Z"
+    },
+    {
+      "id": "wp-6653d407-8c7d-47fc-a817-0ac17cbef21c",
+      "profile_id": "usr-78491c8f-a74c-47fd-96c9-2d8fe8072ea6",
+      "bio": "Skilled furniture builder",
+      "bio_hi": "",
+      "experience_years": 6,
+      "city": "Pune",
+      "service_area": "Kothrud, Hinjewadi",
+      "hourly_rate": 250,
+      "daily_rate": 1200,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:13:51.344Z",
+      "updated_at": "2026-10-31T18:13:51.344Z"
+    },
+    {
+      "id": "wp-2f945334-189c-47e9-aa1e-1fc92f4391ac",
+      "profile_id": "usr-f945c884-9b4e-4449-922d-d61b8c20da90",
+      "bio": "Harpreet Singh - Skilled local service provider on JobBond.",
+      "bio_hi": "Harpreet Singh - जॉबबॉन्ड पर कुशल स्थानीय कारीगर।",
+      "experience_years": 1,
+      "city": "Local Area",
+      "service_area": "City & Surrounding Areas",
+      "hourly_rate": 180,
+      "daily_rate": 750,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:13:51.368Z",
+      "updated_at": "2026-10-31T18:13:51.368Z"
+    },
+    {
+      "id": "wp-387f801d-ff47-4a61-90b2-c0cd3da30ef2",
+      "profile_id": "usr-69bc6f76-12f7-4bee-b114-427caf903350",
+      "bio": "Skilled furniture builder",
+      "bio_hi": "",
+      "experience_years": 6,
+      "city": "Pune",
+      "service_area": "Kothrud, Hinjewadi",
+      "hourly_rate": 250,
+      "daily_rate": 1200,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:14:06.393Z",
+      "updated_at": "2026-10-31T18:14:06.393Z"
+    },
+    {
+      "id": "wp-a38e7fa4-1499-41a6-bc5f-a6e627af15a1",
+      "profile_id": "usr-a9021344-77ff-4c8c-8cac-206ecf6bcbb7",
+      "bio": "Harpreet Singh - Skilled local service provider on JobBond.",
+      "bio_hi": "Harpreet Singh - जॉबबॉन्ड पर कुशल स्थानीय कारीगर।",
+      "experience_years": 1,
+      "city": "Local Area",
+      "service_area": "City & Surrounding Areas",
+      "hourly_rate": 180,
+      "daily_rate": 750,
+      "availability_status": "available",
+      "rating": 5,
+      "reviews_count": 0,
+      "completed_jobs": 0,
+      "is_public": true,
+      "created_at": "2026-10-31T18:14:06.402Z",
+      "updated_at": "2026-10-31T18:14:06.402Z"
     }
   ],
   "worker_skills": [
@@ -509,9 +726,88 @@
       "category_id": "cat-labour",
       "skill_name": "Material Shifting & Loading",
       "created_at": "2026-01-22T07:15:00Z"
+    },
+    {
+      "id": "ws-33da7200-49a7-4fa8-a445-bfb405c1994a",
+      "worker_profile_id": "wp-4447c8b5-b1aa-4f44-a41f-4a4e0e228e18",
+      "category_id": "cat-agri",
+      "skill_name": "Core Service Work",
+      "created_at": "2026-10-31T18:11:56.872Z"
     }
   ],
   "jobs": [
+    {
+      "customer_id": "usr-cust-1",
+      "category_id": "cat-elec",
+      "title": "Fix Balcony Inverter Connection & Switchboard",
+      "description": "Balcony inverter tripping repeatedly during load changeover.",
+      "location_city": "New Delhi",
+      "service_area": "Saket",
+      "budget_min": 700,
+      "budget_max": 1200,
+      "pay_type": "fixed",
+      "work_type": "one_time",
+      "preferred_date": "This Sunday",
+      "contact_preference": "in_app",
+      "status": "open",
+      "id": "job-1ba4aab2-5e33-4644-ab4e-f770eb1f5653",
+      "created_at": "2026-10-31T18:14:06.394Z",
+      "updated_at": "2026-10-31T18:14:06.394Z"
+    },
+    {
+      "customer_id": "usr-cust-1",
+      "category_id": "cat-elec",
+      "title": "Fix Balcony Inverter Connection & Switchboard",
+      "description": "Balcony inverter tripping repeatedly during load changeover.",
+      "location_city": "New Delhi",
+      "service_area": "Saket",
+      "budget_min": 700,
+      "budget_max": 1200,
+      "pay_type": "fixed",
+      "work_type": "one_time",
+      "preferred_date": "This Sunday",
+      "contact_preference": "in_app",
+      "status": "open",
+      "id": "job-e473e8db-c546-4989-a5af-85140cc9f839",
+      "created_at": "2026-10-31T18:13:51.345Z",
+      "updated_at": "2026-10-31T18:13:51.345Z"
+    },
+    {
+      "title": "Home Electricity fitting",
+      "category_id": "cat-elec",
+      "description": "i have work like My home fitting\n",
+      "location_city": "Jaipur",
+      "service_area": "sector11",
+      "budget_min": 500,
+      "budget_max": 550,
+      "pay_type": "daily",
+      "work_type": "one_time",
+      "preferred_date": "22022009",
+      "contact_preference": "phone",
+      "customer_id": "usr-8ae09492-53ec-4539-b6a9-01d833e57d87",
+      "status": "open",
+      "id": "job-b48c3a85-7376-420a-8ed0-ccbe4e64fd33",
+      "created_at": "2026-10-31T18:07:18.794Z",
+      "updated_at": "2026-10-31T18:07:18.794Z"
+    },
+    {
+      "customer_id": "usr-cust-1",
+      "category_id": "cat-elec",
+      "title": "Fix Balcony Inverter Connection & Switchboard",
+      "description": "Balcony inverter tripping repeatedly during load changeover.",
+      "location_city": "New Delhi",
+      "service_area": "Saket",
+      "budget_min": 700,
+      "budget_max": 1200,
+      "pay_type": "fixed",
+      "work_type": "one_time",
+      "preferred_date": "This Sunday",
+      "contact_preference": "in_app",
+      "status": "open",
+      "id": "job-10334912-cb2a-45de-87d9-63d73799cfef",
+      "created_at": "2026-10-31T17:58:20.504Z",
+      "updated_at": "2026-10-31T17:58:20.504Z"
+    },
     {
       "customer_id": "usr-cust-1",
       "category_id": "cat-elec",
@@ -677,6 +973,46 @@
   ],
   "job_applications": [
     {
+      "job_id": "job-1ba4aab2-5e33-4644-ab4e-f770eb1f5653",
+      "worker_id": "usr-work-1",
+      "cover_message": "I have 9 years of electrical experience.",
+      "proposed_rate": 900,
+      "status": "pending",
+      "id": "app-215883fe-3430-487d-9da8-2af634815068",
+      "created_at": "2026-10-31T18:14:06.394Z",
+      "updated_at": "2026-10-31T18:14:06.394Z"
+    },
+    {
+      "job_id": "job-e473e8db-c546-4989-a5af-85140cc9f839",
+      "worker_id": "usr-work-1",
+      "cover_message": "I have 9 years of electrical experience.",
+      "proposed_rate": 900,
+      "status": "pending",
+      "id": "app-1a82b426-0485-4b10-9ab0-d930f62770f0",
+      "created_at": "2026-10-31T18:13:51.346Z",
+      "updated_at": "2026-10-31T18:13:51.346Z"
+    },
+    {
+      "job_id": "job-105",
+      "worker_id": "usr-b9cb1592-5650-48e1-a984-171c13107d65",
+      "cover_message": "",
+      "proposed_rate": 5000,
+      "status": "pending",
+      "id": "app-0941380f-2656-4595-bed8-4fcc391a2a3d",
+      "created_at": "2026-10-31T18:12:59.537Z",
+      "updated_at": "2026-10-31T18:12:59.537Z"
+    },
+    {
+      "job_id": "job-10334912-cb2a-45de-87d9-63d73799cfef",
+      "worker_id": "usr-work-1",
+      "cover_message": "I have 9 years of electrical experience.",
+      "proposed_rate": 900,
+      "status": "pending",
+      "id": "app-cb3498aa-611b-416e-a56d-29697b93a727",
+      "created_at": "2026-10-31T17:58:20.505Z",
+      "updated_at": "2026-10-31T17:58:20.505Z"
+    },
+    {
       "job_id": "job-9faee66a-12d6-42bb-8755-e80ce905f315",
       "worker_id": "usr-work-1",
       "cover_message": "I have 9 years of electrical experience.",
@@ -738,6 +1074,50 @@
     }
   ],
   "service_enquiries": [
+    {
+      "customer_id": "usr-cust-1",
+      "worker_id": "usr-work-1",
+      "description": "Need water motor check at 10am tomorrow.",
+      "preferred_schedule": "Tomorrow 10 AM",
+      "status": "accepted",
+      "id": "enq-6474621b-b157-4151-9648-debabf288ca4",
+      "created_at": "2026-10-31T18:14:06.395Z",
+      "updated_at": "2026-10-31T18:14:06.396Z",
+      "response_message": "Available! Will arrive at 10 AM sharp."
+    },
+    {
+      "customer_id": "usr-cust-1",
+      "worker_id": "usr-work-1",
+      "description": "Need water motor check at 10am tomorrow.",
+      "preferred_schedule": "Tomorrow 10 AM",
+      "status": "accepted",
+      "id": "enq-25bb6580-b735-43cb-a8bf-750ecf6fefbd",
+      "created_at": "2026-10-31T18:13:51.347Z",
+      "updated_at": "2026-10-31T18:13:51.361Z",
+      "response_message": "Available! Will arrive at 10 AM sharp."
+    },
+    {
+      "customer_id": "usr-8ae09492-53ec-4539-b6a9-01d833e57d87",
+      "worker_id": "usr-work-4",
+      "category_id": "cat-clean",
+      "description": "i want to clean my home by you\n ",
+      "preferred_schedule": "",
+      "status": "pending",
+      "id": "enq-e963347f-901c-44e1-a0e1-fc47168c6b94",
+      "created_at": "2026-10-31T18:05:24.869Z",
+      "updated_at": "2026-10-31T18:05:24.869Z"
+    },
+    {
+      "customer_id": "usr-cust-1",
+      "worker_id": "usr-work-1",
+      "description": "Need water motor check at 10am tomorrow.",
+      "preferred_schedule": "Tomorrow 10 AM",
+      "status": "accepted",
+      "id": "enq-436de7e7-48fe-4317-8768-0ebe37d95ec6",
+      "created_at": "2026-10-31T17:58:20.507Z",
+      "updated_at": "2026-10-31T17:58:20.507Z",
+      "response_message": "Available! Will arrive at 10 AM sharp."
+    },
     {
       "customer_id": "usr-cust-1",
       "worker_id": "usr-work-1",
@@ -829,9 +1209,42 @@
       "customer_id": "usr-8ae09492-53ec-4539-b6a9-01d833e57d87",
       "worker_id": "usr-work-1",
       "created_at": "2026-10-29T19:30:06.321Z"
+    },
+    {
+      "id": "save-69a64b3f-dc0d-4f29-b962-5f421f6ebe53",
+      "customer_id": "usr-8ae09492-53ec-4539-b6a9-01d833e57d87",
+      "worker_id": "usr-work-4",
+      "created_at": "2026-10-31T18:04:27.923Z"
     }
   ],
   "audit_logs": [
+    {
+      "id": "audit-3b425f64-db2d-4714-9420-b9db88251602",
+      "admin_id": "usr-admin-1",
+      "action": "CATEGORY_AUDIT",
+      "target_type": "CATEGORY",
+      "target_id": "cat-test",
+      "details": "Verified category taxonomy",
+      "created_at": "2026-10-31T18:14:06.397Z"
+    },
+    {
+      "id": "audit-e80c2600-a655-4088-a6ca-2c2cd0a5e85e",
+      "admin_id": "usr-admin-1",
+      "action": "CATEGORY_AUDIT",
+      "target_type": "CATEGORY",
+      "target_id": "cat-test",
+      "details": "Verified category taxonomy",
+      "created_at": "2026-10-31T18:13:51.363Z"
+    },
+    {
+      "id": "audit-26692e35-3a39-4911-9df0-67a7ea2be8e1",
+      "admin_id": "usr-admin-1",
+      "action": "CATEGORY_AUDIT",
+      "target_type": "CATEGORY",
+      "target_id": "cat-test",
+      "details": "Verified category taxonomy",
+      "created_at": "2026-10-31T17:58:20.509Z"
+    },
     {
       "id": "audit-919e5265-5a82-4b08-856b-7c18cb595a2d",
       "admin_id": "usr-admin-1",
@@ -880,10 +1293,36 @@
   ],
   "auth_sessions": [
     {
-      "id": "9976bb84-995d-41f7-bf20-04eccf29799f",
-      "token": "3ed71a538d5c5af6b529e861789cadba617d0369435cb807344b19b11cc888e5",
-      "user_id": "usr-8ae09492-53ec-4539-b6a9-01d833e57d87",
-      "expires_at": "2026-11-05T19:28:36.595Z"
+      "id": "53971978-b935-4125-b704-fa1dc714026f",
+      "token": "e6d6335bfe93f94c5852d82ad52b0c129fb2c154c9172aad17ba288473cc0bfe",
+      "user_id": "usr-b9cb1592-5650-48e1-a984-171c13107d65",
+      "expires_at": "2026-11-07T18:11:56.872Z"
+    },
+    {
+      "id": "fefa9745-b88e-4986-ab62-2fe9277c88f2",
+      "token": "e921ec10db38160ae8c5b8e089df49c82ded6040b1d7e5f80432ec35ea1287a0",
+      "user_id": "usr-a91ca966-f1d2-4697-a6a8-0dab30574928",
+      "expires_at": "2026-11-07T18:13:32.464Z"
+    }
+  ],
+  "otp_sessions": [
+    {
+      "id": "88f57198-d763-4e0e-be97-8c94582fa386",
+      "phone": "9876543210",
+      "code": "701503",
+      "expires_at": 1793471007138,
+      "attempts": 0,
+      "verified": true,
+      "created_at": 1793470407138
+    },
+    {
+      "id": "e9759753-3055-489d-a443-a33757d6a224",
+      "phone": "9835536311",
+      "code": "486681",
+      "expires_at": 1793471046398,
+      "attempts": 1,
+      "verified": true,
+      "created_at": 1793470446398
     }
   ]
 }

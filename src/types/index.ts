@@ -11,6 +11,10 @@ export interface User {
   preferred_lang: Language;
   avatar_url?: string;
   is_active: boolean;
+  onboarding_completed?: boolean;
+  city?: string;
+  village?: string;
+  pincode?: string;
   created_at: string;
   updated_at: string;
 }

@@ -40,6 +40,9 @@ const DICTIONARIES: Record<Language, Partial<Record<TranslationKey, string>>> = 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  hasSelectedLanguage: boolean;
+  confirmLanguageSelection: (lang: Language) => void;
+  resetLanguageSelection: () => void;
   t: (key: TranslationKey) => string;
   languages: LanguageOption[];
 }
@@ -47,6 +50,14 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [hasSelectedLanguage, setHasSelectedLanguage] = useState<boolean>(() => {
+    try {
+      return Boolean(localStorage.getItem('jobbond_lang'));
+    } catch {
+      return false;
+    }
+  });
+
   const [language, setLanguageState] = useState<Language>(() => {
     try {
       const saved = localStorage.getItem('jobbond_lang');
@@ -61,7 +72,19 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(lang);
     try {
       localStorage.setItem('jobbond_lang', lang);
+      setHasSelectedLanguage(true);
     } catch {}
+  };
+
+  const confirmLanguageSelection = (lang: Language) => {
+    setLanguage(lang);
+  };
+
+  const resetLanguageSelection = () => {
+    try {
+      localStorage.removeItem('jobbond_lang');
+    } catch {}
+    setHasSelectedLanguage(false);
   };
 
   const t = (key: TranslationKey): string => {
@@ -70,7 +93,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languages: SUPPORTED_LANGUAGES }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        setLanguage,
+        hasSelectedLanguage,
+        confirmLanguageSelection,
+        resetLanguageSelection,
+        t,
+        languages: SUPPORTED_LANGUAGES,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );

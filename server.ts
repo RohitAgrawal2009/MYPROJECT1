@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { z } from 'zod';
 import { db, hashPassword, verifyPassword, Profile, WorkerProfile, Job } from './server/db.ts';
@@ -85,6 +86,32 @@ const RegisterSchema = z.object({
 const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, 'Password is required'),
+});
+
+const OtpSendSchema = z.object({
+  phone: z.string().min(10, 'Valid 10-digit mobile number required'),
+});
+
+const OtpVerifySchema = z.object({
+  phone: z.string().min(10, 'Valid 10-digit mobile number required'),
+  code: z.string().length(6, 'OTP must be exactly 6 digits'),
+});
+
+const OnboardingRoleSchema = z.object({
+  role: z.enum(['customer', 'worker']),
+});
+
+const OnboardingProfileSchema = z.object({
+  full_name: z.string().min(2, 'Name must be at least 2 characters'),
+  preferred_lang: z.enum(['en', 'hi', 'pa', 'bn', 'mr', 'ta', 'te', 'gu']).optional(),
+  city: z.string().min(2, 'City or district is required'),
+  village: z.string().optional(),
+  pincode: z.string().optional(),
+  trade: z.string().optional(),
+  category_id: z.string().optional(),
+  experience_years: z.number().min(0).optional(),
+  daily_rate: z.number().positive().optional(),
+  availability_status: z.enum(['available', 'busy', 'unavailable']).optional(),
 });
 
 const JobCreateSchema = z.object({
@@ -228,6 +255,273 @@ app.post('/api/auth/login', (req, res) => {
     message: 'Login successful',
     token: session.token,
     user: safeUser,
+  });
+});
+
+// Helper for Real SMS Gateway delivery (Fast2SMS / Twilio) or Sandbox Logger
+async function dispatchSms(phone: string, otpCode: string): Promise<{ success: boolean; provider: string; note: string }> {
+  const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+
+  // 1. Fast2SMS Provider (India)
+  if (process.env.FAST2SMS_API_KEY) {
+    try {
+      const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+        method: 'POST',
+        headers: {
+          authorization: process.env.FAST2SMS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          route: 'otp',
+          variables_values: otpCode,
+          numbers: cleanPhone,
+        }),
+      });
+      const data: any = await response.json();
+      if (data && data.return) {
+        return { success: true, provider: 'Fast2SMS', note: `SMS successfully queued to +91 ${cleanPhone}` };
+      }
+      return { success: false, provider: 'Fast2SMS', note: data.message || 'Fast2SMS delivery failure' };
+    } catch (err: any) {
+      return { success: false, provider: 'Fast2SMS', note: err.message || 'Network error reaching SMS gateway' };
+    }
+  }
+
+  // 2. Twilio Provider
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER) {
+    try {
+      const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString('base64');
+      const params = new URLSearchParams();
+      params.append('To', `+91${cleanPhone}`);
+      params.append('From', process.env.TWILIO_PHONE_NUMBER);
+      params.append('Body', `Your JobBond security code is ${otpCode}. Valid for 10 minutes.`);
+
+      const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+      const data: any = await response.json();
+      if (response.ok) {
+        return { success: true, provider: 'Twilio', note: 'SMS dispatched via Twilio' };
+      }
+      return { success: false, provider: 'Twilio', note: data.message || 'Twilio delivery failed' };
+    } catch (err: any) {
+      return { success: false, provider: 'Twilio', note: err.message || 'Network error contacting Twilio' };
+    }
+  }
+
+  // 3. Development / Sandbox fallback
+  return {
+    success: true,
+    provider: 'sandbox_logger',
+    note: 'Running in development sandbox mode. Set FAST2SMS_API_KEY or TWILIO_* in environment for live carrier SMS dispatch.',
+  };
+}
+
+// --- OTP Authentication Endpoints ---
+app.post('/api/auth/otp/send', async (req, res) => {
+  const parseResult = OtpSendSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({ error: getZodErrorMessage(parseResult.error) });
+  }
+
+  const rawPhone = parseResult.data.phone;
+  const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+
+  if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+    return res.status(400).json({ error: 'Please enter a valid 10-digit Indian mobile number.' });
+  }
+
+  const otpResult = db.createOrUpdateOtp(cleanPhone);
+
+  if (otpResult.isCooldown) {
+    return res.status(429).json({
+      error: `Please wait ${otpResult.cooldownRemaining} seconds before requesting a new OTP.`,
+      cooldown: otpResult.cooldownRemaining,
+    });
+  }
+
+  const smsStatus = await dispatchSms(cleanPhone, otpResult.session.code);
+
+  res.json({
+    message: `OTP sent successfully to +91 ${cleanPhone}`,
+    phone: cleanPhone,
+    cooldown: 60,
+    expires_in: 600,
+    sms_status: smsStatus,
+    // Provide preview_code for sandbox and development validation
+    preview_code: otpResult.session.code,
+  });
+});
+
+app.post('/api/auth/otp/verify', (req, res) => {
+  const parseResult = OtpVerifySchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({ error: getZodErrorMessage(parseResult.error) });
+  }
+
+  const { phone: rawPhone, code } = parseResult.data;
+  const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+
+  const verifyResult = db.verifyOtp(cleanPhone, code);
+  if (!verifyResult.success) {
+    return res.status(400).json({ error: verifyResult.error });
+  }
+
+  // Find or create profile
+  let user = db.getProfileByPhone(cleanPhone);
+  let isNewUser = false;
+
+  if (!user) {
+    isNewUser = true;
+    user = db.createProfile({
+      email: `${cleanPhone}@phone.jobbond.in`,
+      password_hash: hashPassword(crypto.randomUUID()),
+      full_name: `Worker / Customer`,
+      phone: `+91 ${cleanPhone}`,
+      role: 'customer',
+      preferred_lang: 'hi',
+      is_active: true,
+      onboarding_completed: false,
+    });
+  }
+
+  const session = db.createSession(user.id);
+  res.cookie('jobbond_token', session.token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  const { password_hash: _, ...safeUser } = user;
+  let workerProfile = null;
+  let skills: any[] = [];
+
+  if (user.role === 'worker') {
+    workerProfile = db.getWorkerProfileByProfileId(user.id);
+    if (workerProfile) {
+      skills = db.getWorkerSkills(workerProfile.id);
+    }
+  }
+
+  res.json({
+    message: 'Verification successful',
+    token: session.token,
+    user: safeUser,
+    worker_profile: workerProfile,
+    skills,
+    is_new_user: isNewUser || !user.onboarding_completed,
+    needs_role_selection: !user.onboarding_completed,
+  });
+});
+
+// --- Onboarding Endpoints ---
+app.post('/api/auth/onboarding/role', requireAuth, (req: AuthenticatedRequest, res) => {
+  const parseResult = OnboardingRoleSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({ error: getZodErrorMessage(parseResult.error) });
+  }
+
+  const { role } = parseResult.data;
+  const updatedUser = db.updateUserRole(req.user!.id, role);
+
+  if (!updatedUser) {
+    return res.status(404).json({ error: 'User profile not found.' });
+  }
+
+  let workerProfile = null;
+  let skills: any[] = [];
+  if (role === 'worker') {
+    workerProfile = db.getWorkerProfileByProfileId(req.user!.id);
+    if (workerProfile) {
+      skills = db.getWorkerSkills(workerProfile.id);
+    }
+  }
+
+  const { password_hash: _, ...safeUser } = updatedUser;
+  res.json({
+    message: `Role set to ${role}`,
+    user: safeUser,
+    worker_profile: workerProfile,
+    skills,
+  });
+});
+
+app.post('/api/auth/onboarding/profile', requireAuth, (req: AuthenticatedRequest, res) => {
+  const parseResult = OnboardingProfileSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({ error: getZodErrorMessage(parseResult.error) });
+  }
+
+  const data = parseResult.data;
+  const updatedUser = db.updateProfile(req.user!.id, {
+    full_name: data.full_name,
+    city: data.city,
+    village: data.village || data.city,
+    pincode: data.pincode,
+    preferred_lang: data.preferred_lang || req.user!.preferred_lang,
+    onboarding_completed: true,
+  });
+
+  if (!updatedUser) {
+    return res.status(404).json({ error: 'User profile not found.' });
+  }
+
+  let workerProfile = null;
+  let skills: any[] = [];
+
+  if (updatedUser.role === 'worker') {
+    workerProfile = db.upsertWorkerProfile(updatedUser.id, {
+      city: data.city,
+      service_area: data.village || data.city,
+      experience_years: data.experience_years ?? 1,
+      daily_rate: data.daily_rate ?? 800,
+      availability_status: data.availability_status || 'available',
+      bio: `${data.full_name} - Skilled ${data.trade || 'craftsman'} available for work in ${data.city}.`,
+      bio_hi: `${data.full_name} - ${data.city} में काम के लिए उपलब्ध कुशल कारीगर।`,
+      is_public: true,
+    });
+
+    if (data.category_id) {
+      db.setWorkerSkills(workerProfile.id, [
+        { category_id: data.category_id, skill_name: data.trade || 'General Skilled Work' },
+      ]);
+      skills = db.getWorkerSkills(workerProfile.id);
+    }
+  }
+
+  const { password_hash: _, ...safeUser } = updatedUser;
+  res.json({
+    message: 'Profile setup completed',
+    user: safeUser,
+    worker_profile: workerProfile,
+    skills,
+  });
+});
+
+// Worker Live Availability Toggle
+app.patch('/api/worker/availability', requireAuth, (req: AuthenticatedRequest, res) => {
+  const { availability_status } = req.body;
+  if (!['available', 'busy', 'unavailable'].includes(availability_status)) {
+    return res.status(400).json({ error: 'Invalid availability status. Must be available, busy, or unavailable.' });
+  }
+
+  const wp = db.getWorkerProfileByProfileId(req.user!.id);
+  if (!wp) {
+    return res.status(404).json({ error: 'Worker profile not found.' });
+  }
+
+  const updatedWp = db.upsertWorkerProfile(req.user!.id, {
+    availability_status,
+  });
+
+  res.json({
+    message: 'Availability updated',
+    worker_profile: updatedWp,
   });
 });
 
@@ -1003,25 +1297,60 @@ app.get('/api/admin/audit-logs', requireAuth, requireRole('admin'), (req, res) =
 // ==========================================
 // STATIC ASSETS & VITE INTEGRATION
 // ==========================================
+function getPort(): number {
+  const portArgIndex = process.argv.indexOf('--port');
+  if (portArgIndex !== -1 && process.argv[portArgIndex + 1]) {
+    const parsed = parseInt(process.argv[portArgIndex + 1], 10);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  return 3000;
+}
+
+function getHost(): string {
+  const hostArgIndex = process.argv.indexOf('--host');
+  if (hostArgIndex !== -1 && process.argv[hostArgIndex + 1]) {
+    return process.argv[hostArgIndex + 1];
+  }
+  return '0.0.0.0';
+}
+
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
+  const port = getPort();
+  const host = getHost();
+  const distPath = path.resolve(__dirname, 'dist');
+  const hasDist = fs.existsSync(distPath);
+
+  if (process.env.NODE_ENV === 'production' && hasDist) {
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve(distPath, 'index.html'));
+    });
+  } else {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.resolve(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(distPath, 'index.html'));
-    });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`JobBond Full-Stack Server running at http://0.0.0.0:${PORT}`);
+  const server = app.listen(port, host, () => {
+    console.log(`JobBond Full-Stack Server running at http://${host}:${port}`);
+  });
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    console.error('Server encountered error:', err);
+  });
+
+  process.on('SIGTERM', () => {
+    server.close(() => {
+      process.exit(0);
+    });
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});
+

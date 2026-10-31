@@ -15,12 +15,22 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   register: (payload: any) => Promise<void>;
+  sendOtp: (phone: string) => Promise<{ success: boolean; error?: string; preview_code?: string; cooldown?: number; phone?: string; message?: string }>;
+  verifyOtp: (phone: string, code: string) => Promise<{ success: boolean; error?: string; is_new_user?: boolean; needs_role_selection?: boolean }>;
+  setUserRole: (role: 'customer' | 'worker') => Promise<void>;
+  completeProfile: (payload: any) => Promise<void>;
+  updateAvailability: (status: 'available' | 'busy' | 'unavailable') => Promise<void>;
   logout: () => Promise<void>;
   quickLogin: (type: 'customer' | 'worker_elec' | 'worker_plumb' | 'admin') => Promise<void>;
   refreshUser: () => Promise<void>;
   authModalState: AuthModalState;
   openAuthModal: (mode?: 'login' | 'register', defaultRole?: 'customer' | 'worker') => void;
   closeAuthModal: () => void;
+  // Onboarding workflow state
+  onboardingStep: 'login' | 'user_type' | 'profile_setup' | null;
+  setOnboardingStep: (step: 'login' | 'user_type' | 'profile_setup' | null) => void;
+  pendingMobile: string;
+  setPendingMobile: (phone: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +40,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [workerProfile, setWorkerProfile] = useState<any | null>(null);
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Onboarding flow state
+  const [onboardingStep, setOnboardingStep] = useState<'login' | 'user_type' | 'profile_setup' | null>(null);
+  const [pendingMobile, setPendingMobile] = useState<string>('');
 
   const [authModalState, setAuthModalState] = useState<AuthModalState>({
     isOpen: false,
@@ -60,6 +74,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(data.user);
       setWorkerProfile(data.worker_profile || null);
       setSkills(data.skills || []);
+
+      // If user has not completed onboarding, route them to user_type or profile_setup
+      if (data.user && !data.user.onboarding_completed) {
+        if (!data.user.role || data.user.full_name?.startsWith('Worker / Customer')) {
+          setOnboardingStep('user_type');
+        } else {
+          setOnboardingStep('profile_setup');
+        }
+      }
     } catch {
       localStorage.removeItem('jobbond_token');
       setUser(null);
@@ -80,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('jobbond_token', res.token);
       await refreshUser();
       closeAuthModal();
+      setOnboardingStep(null);
     }
   };
 
@@ -89,6 +113,85 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('jobbond_token', res.token);
       await refreshUser();
       closeAuthModal();
+      setOnboardingStep(null);
+    }
+  };
+
+  const sendOtp = async (phone: string) => {
+    try {
+      const res = await api.post('/api/auth/otp/send', { phone });
+      setPendingMobile(res.phone || phone);
+      return {
+        success: true,
+        preview_code: res.preview_code,
+        cooldown: res.cooldown || 60,
+        phone: res.phone || phone,
+        message: res.message,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.response?.data?.error || err.message || 'Failed to send OTP. Please check your phone number.',
+        cooldown: err.response?.data?.cooldown,
+      };
+    }
+  };
+
+  const verifyOtp = async (phone: string, code: string) => {
+    try {
+      const res = await api.post('/api/auth/otp/verify', { phone, code });
+      if (res.token) {
+        localStorage.setItem('jobbond_token', res.token);
+        setUser(res.user);
+        setWorkerProfile(res.worker_profile || null);
+        setSkills(res.skills || []);
+
+        if (res.needs_role_selection || res.is_new_user) {
+          setOnboardingStep('user_type');
+        } else {
+          setOnboardingStep(null);
+        }
+
+        return {
+          success: true,
+          is_new_user: res.is_new_user,
+          needs_role_selection: res.needs_role_selection,
+        };
+      }
+      return { success: false, error: 'Failed to verify session' };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.response?.data?.error || err.message || 'Invalid or expired OTP. Please try again.',
+      };
+    }
+  };
+
+  const setUserRole = async (role: 'customer' | 'worker') => {
+    const res = await api.post('/api/auth/onboarding/role', { role });
+    setUser(res.user);
+    if (res.worker_profile) {
+      setWorkerProfile(res.worker_profile);
+    }
+    setOnboardingStep('profile_setup');
+  };
+
+  const completeProfile = async (payload: any) => {
+    const res = await api.post('/api/auth/onboarding/profile', payload);
+    setUser(res.user);
+    if (res.worker_profile) {
+      setWorkerProfile(res.worker_profile);
+    }
+    if (res.skills) {
+      setSkills(res.skills);
+    }
+    setOnboardingStep(null);
+  };
+
+  const updateAvailability = async (status: 'available' | 'busy' | 'unavailable') => {
+    const res = await api.patch('/api/worker/availability', { availability_status: status });
+    if (res.worker_profile) {
+      setWorkerProfile(res.worker_profile);
     }
   };
 
@@ -102,6 +205,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setWorkerProfile(null);
       setSkills([]);
+      setOnboardingStep(null);
     }
   };
 
@@ -132,12 +236,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         login,
         register,
+        sendOtp,
+        verifyOtp,
+        setUserRole,
+        completeProfile,
+        updateAvailability,
         logout,
         quickLogin,
         refreshUser,
         authModalState,
         openAuthModal,
         closeAuthModal,
+        onboardingStep,
+        setOnboardingStep,
+        pendingMobile,
+        setPendingMobile,
       }}
     >
       {children}

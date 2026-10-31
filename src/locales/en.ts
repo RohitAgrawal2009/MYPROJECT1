@@ -256,6 +256,81 @@ export const en = {
   footerCategories: 'Categories',
   footerHelpSafety: 'Help & Safety',
   footerRights: 'All rights reserved. Made for Indian workers, farmers, and homeowners.',
+
+  // Onboarding Screen 1: Language Selection
+  chooseLanguageTitle: 'Choose Your Language',
+  chooseLanguageSubtitle: 'अपनी पसंदीदा भाषा चुनें',
+  continueBtn: 'Continue',
+  changeLanguage: 'Change Language',
+
+  // Onboarding Screen 2: Mobile Number Login
+  welcomeTitle: 'Welcome to JobBond',
+  welcomeSubtitle: 'Continue with your mobile number.',
+  mobileNumberLabel: 'Mobile Number',
+  enterMobile: 'Enter 10-digit mobile number',
+  getOtpBtn: 'Get OTP',
+  verifyOtpBtn: 'Verify & Continue',
+  enterOtp: 'Enter 6-digit Verification Code (OTP)',
+  otpSentTo: 'We sent a 6-digit verification code to',
+  resendOtp: 'Resend OTP',
+  resendIn: 'Resend OTP in',
+  changeNumber: 'Change Number',
+  testCodeBanner: 'Preview / Test OTP Code:',
+  useTestCode: 'Use Code',
+  otpCooldownNote: 'Please wait before requesting another OTP',
+
+  // Onboarding Screen 3: User Type Selection
+  userTypeHeading: 'What would you like to do on JobBond?',
+  userTypeSubheading: 'Select how you want to use the platform today',
+  needWorkerTitle: 'I Need a Worker',
+  needWorkerHindi: 'मुझे काम करवाना है',
+  needWorkerSubtitle: 'Hire local skilled technicians, helpers, or farm laborers',
+  needWorkTitle: 'I Need Work',
+  needWorkHindi: 'मुझे काम चाहिए',
+  needWorkSubtitle: 'Find daily wage jobs, projects, and connect directly with employers',
+
+  // Onboarding Screen 4: Simple Stepped Profile Setup
+  profileSetupTitle: 'Complete Your Profile',
+  profileSetupSubtitle: 'Just a few quick details to set up your account',
+  cityVillageLabel: 'City / Town / Village',
+  cityVillagePlaceholder: 'e.g. Pune, Ludhiana, Jaipur, Varanasi...',
+  selectTradeLabel: 'What is your primary skill or trade?',
+  tradePlaceholder: 'Select your trade',
+  expYearsLabel: 'Experience',
+  expYearsPlaceholder: 'Years of practical work experience',
+  dailyWageLabel: 'Expected Daily Wage (₹/day)',
+  dailyWagePlaceholder: 'e.g. ₹800',
+  availableTodayLabel: 'Available for work today',
+  finishSetupBtn: 'Complete Setup & Go to Home',
+
+  // Customer & Worker Homes (Screens 5 & 6)
+  customerHomeTitle: 'What service do you need today?',
+  customerHomeSubtitle: 'Book verified local tradespeople and agricultural workers in your area',
+  workerHomeTitle: 'Find Work Near You',
+  workerHomeSubtitle: 'Browse nearby jobs, daily wage opportunities, and farm work',
+  todayStatusLabel: 'Today’s Work Status',
+  iAmAvailableToday: 'I am Available for Work Today',
+  iAmBusyToday: 'Currently Busy / Unavailable',
+  filterAllJobs: 'All Jobs',
+  filterAgriJobs: 'Agricultural & Farm Work',
+  filterDailyWage: 'Daily Wage (दिहाड़ी)',
+  filterPartTime: 'Part-Time',
+  filterFullTime: 'Full-Time',
+  applyNowBtn: 'Apply for Work',
+  appliedSuccess: 'Application Sent!',
+  callDirect: 'Call Directly',
+  sendEnquiryBtn: 'Send Service Request',
+  dailyRateBadge: '/ day',
+  hourlyRateBadge: '/ hr',
+  urgentTag: 'Urgent Work',
+
+  // Mobile Bottom Navigation
+  bottomNavHome: 'Home',
+  bottomNavWorkers: 'Workers',
+  bottomNavJobs: 'Find Work',
+  bottomNavEnquiries: 'Enquiries',
+  bottomNavApplications: 'My Jobs',
+  bottomNavProfile: 'Profile',
 };
 
 export type TranslationKey = keyof typeof en;

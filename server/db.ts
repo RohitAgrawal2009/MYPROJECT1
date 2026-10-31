@@ -12,8 +12,22 @@ export interface Profile {
   preferred_lang: 'en' | 'hi' | 'pa' | 'bn' | 'mr' | 'ta' | 'te' | 'gu';
   avatar_url?: string;
   is_active: boolean;
+  onboarding_completed?: boolean;
+  city?: string;
+  village?: string;
+  pincode?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface OtpSession {
+  id: string;
+  phone: string;
+  code: string;
+  expires_at: number; // ms timestamp
+  attempts: number;
+  verified: boolean;
+  created_at: number;
 }
 
 export interface ServiceCategory {
@@ -151,6 +165,7 @@ export interface DatabaseSchema {
   saved_workers: SavedWorker[];
   audit_logs: AuditLog[];
   auth_sessions: AuthSession[];
+  otp_sessions: OtpSession[];
 }
 
 export function hashPassword(password: string): string {
@@ -196,7 +211,11 @@ class Database {
     if (fs.existsSync(DB_FILE)) {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!parsed.otp_sessions) {
+          parsed.otp_sessions = [];
+        }
+        return parsed;
       } catch (err) {
         console.warn('Could not read existing DB file, re-seeding default data:', err);
       }
@@ -836,6 +855,7 @@ class Database {
       saved_workers,
       audit_logs,
       auth_sessions: [],
+      otp_sessions: [],
     };
   }
 
@@ -906,6 +926,102 @@ class Database {
   public deleteSession(token: string): void {
     this.data.auth_sessions = this.data.auth_sessions.filter((s) => s.token !== token);
     this.save();
+  }
+
+  // --- Phone OTP Authentication ---
+  public getProfileByPhone(phone: string): Profile | undefined {
+    const clean = phone.replace(/\D/g, '').slice(-10);
+    if (!clean) return undefined;
+    return this.data.profiles.find((p) => p.phone && p.phone.replace(/\D/g, '').slice(-10) === clean);
+  }
+
+  public getOtp(phone: string): OtpSession | undefined {
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    return this.data.otp_sessions.find((s) => s.phone === cleanPhone);
+  }
+
+  public createOrUpdateOtp(phone: string, validitySeconds = 600): { session: OtpSession; cooldownRemaining: number; isCooldown: boolean } {
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    const existing = this.data.otp_sessions.find((s) => s.phone === cleanPhone);
+    const now = Date.now();
+
+    if (existing && (now - existing.created_at) < 60000) {
+      const cooldownRemaining = Math.ceil((60000 - (now - existing.created_at)) / 1000);
+      return { session: existing, cooldownRemaining, isCooldown: true };
+    }
+
+    // Clean out prior OTPs for this phone
+    this.data.otp_sessions = this.data.otp_sessions.filter((s) => s.phone !== cleanPhone);
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const session: OtpSession = {
+      id: crypto.randomUUID(),
+      phone: cleanPhone,
+      code,
+      expires_at: now + validitySeconds * 1000,
+      attempts: 0,
+      verified: false,
+      created_at: now,
+    };
+
+    this.data.otp_sessions.push(session);
+    this.save();
+    return { session, cooldownRemaining: 60, isCooldown: false };
+  }
+
+  public verifyOtp(phone: string, inputCode: string): { success: boolean; error?: string } {
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    const session = this.data.otp_sessions.find((s) => s.phone === cleanPhone);
+
+    if (!session || Date.now() > session.expires_at) {
+      return { success: false, error: 'OTP has expired or does not exist. Please request a new code.' };
+    }
+
+    if (session.attempts >= 5) {
+      return { success: false, error: 'Too many incorrect attempts. Please request a new OTP.' };
+    }
+
+    if (session.code !== inputCode.trim()) {
+      session.attempts += 1;
+      this.save();
+      const remainingAttempts = 5 - session.attempts;
+      return {
+        success: false,
+        error: `Incorrect OTP. Please enter the correct 6-digit code (${remainingAttempts} attempt${remainingAttempts === 1 ? '' : 's'} remaining).`,
+      };
+    }
+
+    session.verified = true;
+    this.save();
+    return { success: true };
+  }
+
+  public updateUserRole(userId: string, role: 'customer' | 'worker'): Profile | null {
+    const profile = this.getProfileById(userId);
+    if (!profile) return null;
+
+    profile.role = role;
+    profile.updated_at = new Date().toISOString();
+
+    if (role === 'worker') {
+      const existingWp = this.getWorkerProfileByProfileId(userId);
+      if (!existingWp) {
+        this.upsertWorkerProfile(userId, {
+          bio: `${profile.full_name} - Skilled local service provider on JobBond.`,
+          bio_hi: `${profile.full_name} - जॉबबॉन्ड पर कुशल स्थानीय कारीगर।`,
+          experience_years: 1,
+          city: profile.city || 'Local Area',
+          service_area: profile.village || 'City & Surrounding Areas',
+          daily_rate: 750,
+          hourly_rate: 180,
+          availability_status: 'available',
+          is_public: true,
+        });
+      }
+    }
+
+    this.save();
+    return profile;
   }
 
   // --- Worker Profiles ---

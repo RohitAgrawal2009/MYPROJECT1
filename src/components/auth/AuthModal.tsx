@@ -4,11 +4,13 @@ import { useLanguage } from '../../context/LanguageContext.tsx';
 import { X, Lock, Mail, User as UserIcon, Phone, Briefcase, MapPin, Award, IndianRupee, AlertCircle } from 'lucide-react';
 import { api } from '../../api/client.ts';
 import { ServiceCategory } from '../../types/index.ts';
+import { MobileLoginScreen } from '../onboarding/MobileLoginScreen.tsx';
 
 export const AuthModal: React.FC = () => {
   const { authModalState, closeAuthModal, login, register, quickLogin } = useAuth();
   const { t, language } = useLanguage();
 
+  const [authMethod, setAuthMethod] = useState<'otp' | 'password'>('otp');
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [role, setRole] = useState<'customer' | 'worker'>('customer');
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -36,8 +38,6 @@ export const AuthModal: React.FC = () => {
       api.get<ServiceCategory[]>('/api/categories').then(setCategories).catch(() => {});
     }
   }, [authModalState]);
-
-  if (!authModalState.isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +86,36 @@ export const AuthModal: React.FC = () => {
     }
   };
 
+  if (!authModalState.isOpen) return null;
+
+  if (authMethod === 'otp') {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in overflow-y-auto">
+        <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-8">
+          <div className="flex items-center justify-between px-6 pt-5 pb-1 border-b border-slate-100 dark:border-slate-800">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              ⚡ Mobile Number + OTP
+            </span>
+            <button
+              type="button"
+              onClick={() => setAuthMethod('password')}
+              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 underline"
+            >
+              Email & Password Login →
+            </button>
+          </div>
+          <MobileLoginScreen
+            isModal={false}
+            onClose={closeAuthModal}
+            onSuccess={() => {
+              closeAuthModal();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-8">
@@ -102,13 +132,22 @@ export const AuthModal: React.FC = () => {
               <p className="text-xs text-slate-400">JobBond • {t('brandTagline')}</p>
             </div>
           </div>
-          <button
-            onClick={closeAuthModal}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAuthMethod('otp')}
+              className="text-xs text-emerald-400 hover:text-emerald-300 underline font-medium"
+            >
+              Mobile OTP
+            </button>
+            <button
+              onClick={closeAuthModal}
+              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tab switch */}

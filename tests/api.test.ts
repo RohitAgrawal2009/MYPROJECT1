@@ -163,4 +163,64 @@ describe('JobBond Platform Test Suite', () => {
     const logs = db.getAuditLogs();
     assert.ok(logs.some((l) => l.id === log.id));
   });
+
+  it('9. Mobile OTP Generation, Cooldown & Verification Flow', () => {
+    const testPhone = '98' + Math.floor(10000000 + Math.random() * 90000000);
+    // 1. Generate OTP
+    const otpResult = db.createOrUpdateOtp(testPhone);
+    assert.strictEqual(otpResult.isCooldown, false);
+    assert.strictEqual(typeof otpResult.session.code, 'string');
+    assert.strictEqual(otpResult.session.code.length, 6);
+
+    // 2. Cooldown check - rapid subsequent call within 60s should trigger isCooldown
+    const rapidResult = db.createOrUpdateOtp(testPhone);
+    assert.strictEqual(rapidResult.isCooldown, true);
+    assert.ok(rapidResult.cooldownRemaining > 0 && rapidResult.cooldownRemaining <= 60);
+
+    // 3. Verify incorrect OTP fails
+    const badVerify = db.verifyOtp(testPhone, '000000');
+    assert.strictEqual(badVerify.success, false);
+    assert.ok(badVerify.error && badVerify.error.includes('Incorrect OTP'));
+
+    // 4. Verify correct OTP succeeds
+    const goodVerify = db.verifyOtp(testPhone, otpResult.session.code);
+    assert.strictEqual(goodVerify.success, true);
+  });
+
+  it('10. User Role Update & Onboarding Profile Setup', () => {
+    const testPhone = '9123456789';
+    const profile = db.createProfile({
+      email: `${testPhone}@phone.jobbond.in`,
+      password_hash: 'hash:1234',
+      full_name: 'Harpreet Singh',
+      phone: `+91 ${testPhone}`,
+      role: 'customer',
+      preferred_lang: 'pa',
+      is_active: true,
+      onboarding_completed: false,
+    });
+
+    assert.ok(profile.id);
+    assert.strictEqual(profile.role, 'customer');
+
+    // Update role to worker
+    const updated = db.updateUserRole(profile.id, 'worker');
+    assert.ok(updated);
+    assert.strictEqual(updated.role, 'worker');
+
+    // Worker profile should now exist
+    const wp = db.getWorkerProfileByProfileId(profile.id);
+    assert.ok(wp);
+    assert.strictEqual(wp.profile_id, profile.id);
+
+    // Complete profile setup
+    const completed = db.updateProfile(profile.id, {
+      city: 'Amritsar',
+      village: 'Verka Rural',
+      onboarding_completed: true,
+    });
+    assert.ok(completed);
+    assert.strictEqual(completed.onboarding_completed, true);
+    assert.strictEqual(completed.city, 'Amritsar');
+  });
 });
